@@ -10,5 +10,6 @@ module.exports = {
   rules: {
     'linebreak-style': ['off', 'windows'],
     'no-console': 'off', // 禁止使用console
+    'no-undef': 'off',
   },
 };

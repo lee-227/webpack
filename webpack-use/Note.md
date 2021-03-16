@@ -18,7 +18,7 @@ plugins:[
 ```
 
 ## 打包第三方库
-**1. 配置ProvidePlugin后，在使用时将不再需要import和require进行引入，直接使用即可**
+**1. 配置 ProvidePlugin 后，在使用时将不再需要 import 和 require 进行引入，直接使用即可**
 ```js
 new webpack.ProvidePlugin({
     _:'lodash'
@@ -41,7 +41,7 @@ module: {
   ]
 }
 ```
-**3. externals 想引用一个库，但是又不想让webpack打包，并且又不影响我们在程序中以CMD、AMD或者window/global全局等方式进行使用，那就可以通过配置externals**
+**3. externals 想引用一个库，但是又不想让 webpack 打包，并且又不影响我们在程序中以CMD、AMD 或者 window/global 全局等方式进行使用，那就可以通过配置 externals**
 ```js
 externals: {
   lodash: '_',
@@ -85,18 +85,19 @@ new HtmlWebpackExternalsPlugin({
 
   **生产环境调试**
 ```js
+const FileManagerPlugin = require('filemanager-webpack-plugin');
 {
   plugins:[
     new webpack.SourceMapDevToolPlugin({
       append: '\n//# sourceMappingURL=http://127.0.0.1:8081/[url]',
-      filename: '[file].map',
+      filename: '[file].map', // 定义生成的 source map 的名称（如果没有值将会变成 inlined）。
     }),
     new FileManagerPlugin({
       events: {
         onEnd: {
           copy: [{
             source: './dist/*.map', // 生成map的目录
-            destination: 'C:/sourcemap', // map 存放地址
+            destination: path.resolve(__dirname,'./'), // map 存放地址
           }],
           delete: ['./dist/*.map'], // 删除打包后生成的 map
         },

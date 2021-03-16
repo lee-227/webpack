@@ -5,9 +5,9 @@ function readonly(target, key, descriptor) {
   descriptor.writable = false;
 }
 class Person {
-  @readonly name = 'lee'
+  @readonly name = 'lee';
 }
 const user = new Person();
-user.name = 'lee2';
+// user.name = 'lee2';
 console.log(user);
 export default {};

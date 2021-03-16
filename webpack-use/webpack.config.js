@@ -11,6 +11,7 @@ module.exports = (env, argv) => {
     // development 模式:会将模块内的 process.env.NODE_ENV 的值设为 development。
     // 默认会开启 debug 工具，运行时打印详细的错误信息，以及更加快速的增量编译构建
     mode: 'development',
+    devtool: 'source-map',
     entry: './src/index.js', // 设置入口文件 默认值是 ./src/index.js
     output: {
       path: path.resolve(__dirname, 'dist'), // 打包后文件路径 默认值 ./dist/main.js
