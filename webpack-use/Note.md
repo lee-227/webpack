@@ -24,7 +24,7 @@ new webpack.ProvidePlugin({
     _:'lodash'
 })
 ```
-**2. expose-loader 可以把模块添加到全局对象上**
+**2. expose-loader 可以把模块添加到全局对象上 需要代码中先引入该模块**
 ```js
 module: {
   rules: [

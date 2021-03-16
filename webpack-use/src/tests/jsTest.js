@@ -10,4 +10,6 @@ class Person {
 const user = new Person();
 // user.name = 'lee2';
 console.log(user);
-export default {};
+export default {
+  lee: '1',
+};

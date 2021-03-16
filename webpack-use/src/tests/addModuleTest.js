@@ -1,4 +1,4 @@
 // const _ = require('lodash');
-import _ from 'lodash';
+import jq from 'jquery';
 
-console.log(_);
+console.log(jq);
