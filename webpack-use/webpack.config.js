@@ -1,5 +1,8 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = (env, argv) => {
   console.log('env', env);
@@ -11,11 +14,16 @@ module.exports = (env, argv) => {
     // development 模式:会将模块内的 process.env.NODE_ENV 的值设为 development。
     // 默认会开启 debug 工具，运行时打印详细的错误信息，以及更加快速的增量编译构建
     mode: 'development',
-    devtool: 'source-map',
-    entry: './src/index.js', // 设置入口文件 默认值是 ./src/index.js
+    // devtool: 'source-map',
+    // entry: './src/index.js', // 设置入口文件 默认值是 ./src/index.js
+    entry: {
+      main: './src/index.js',
+    },
     output: {
       path: path.resolve(__dirname, 'dist'), // 打包后文件路径 默认值 ./dist/main.js
-      filename: 'main.js', // 打包后文件名
+      filename: '[name].[hash:10].js', // 入口代码块的名称
+      chunkFilename: '[name].[hash:10].js', // 非入口代码块的名称 两个来源 1.代码分割 common vendor 2.懒加载 import 导入的模块
+      // filename: 'main.js', // 打包后文件名
       // publicPath: '/lee', // 引用资源路径要加的前缀
     },
     // devServer 会启动一个 HTTP 开发服务器，把一个文件夹作为静态根目录
@@ -27,6 +35,26 @@ module.exports = (env, argv) => {
       port: 8000,
       open: true,
       // publicPath:'/lee' // 打包生成的静态文件所在的位置，默认找 output 下的 publicPaht 值
+      before: (app) => {
+        // 本质上 devSever 启用的是 express 服务器 可以通过这个方法 mock 接口数据
+        app.get('/api', (req, res) => res.end('data'));
+      },
+      // proxy: {
+      //   // 接口代理
+      //   '/api': {
+      //     target: 'http://localhost:8080',
+      //     pathRewrite: {
+      //       '^/api': '',
+      //     },
+      //   },
+      // },
+    },
+    watch: false, // 监听文件变化 自动重新打包 配合 webpack 命令使用 也可以通过 webpack --watch 开启监听
+    watchOptions: {
+      // 监听选项
+      ignored: /node_modules/, // 忽略哪些文件
+      aggregateTimeout: 300, // 文件发生变化后 过 300 ms重新编译
+      poll: 1000, // 每秒钟访问1000次文件查看是否文件改变，数值越大越敏感
     },
     module: {
       // webpack 只能识别js跟json文件 而loader的作用是让webpack可以处理其他类型的文件，并将他们转换为有效的模块，供程序使用，以及将该模块添加到依赖图中
@@ -56,9 +84,15 @@ module.exports = (env, argv) => {
             },
           },
         },
-        { test: /\.css$/, use: ['style-loader', 'css-loader'] }, // 通过 loader 处理css文件 style-loader 处理样式把CSS插入DOM中 css-loader 处理css文件中的样式引入问题 @import和url()
-        { test: /\.scss$/, use: ['style-loader', 'css-loader', 'sass-loader'] },
-        { test: /\.less$/, use: ['style-loader', 'css-loader', 'less-loader'] },
+        { test: /\.css$/, use: ['style-loader', 'css-loader'] }, // 通过 loader 处理css文件 style-loader 处理样式把CSS插入DOM 中 css-loader 处理css文件中的样式引入问题 @import和url()
+        {
+          test: /\.scss$/,
+          use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+        },
+        {
+          test: /\.less$/,
+          use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader'],
+        },
         {
           test: /\.(jpg|png|gif|svg|bmp)$/, // file-loader 处理CSS等文件中的引入图片路径问题
           use: [
@@ -66,8 +100,10 @@ module.exports = (env, argv) => {
               loader: 'url-loader', // url-loader 当图片小于limit的时候会把图片BASE64编码，大于limit参数的时候还是使用file-loader进行拷贝
               options: {
                 esModule: false, // 不使用 esModule 模式进行导出
-                name: '[hash:10].[ext]', // 引入的图片重新用hash命名
+                name: '[hash:10].[ext]', // 引入的图片重新用hash命名 也可以设置输出目录 跟 outputPath 配合 publicPath 一致 会导致重新打包删除 images 目录失败
                 limit: 8 * 1024,
+                outputPath: 'images', // 制定输出目录
+                publicPath: '/images', // 输出目录修改时 引入的路径也要修改
               },
             },
           ],
@@ -89,6 +125,22 @@ module.exports = (env, argv) => {
     plugins: [
       new HtmlWebpackPlugin({
         template: './src/index.html',
+        // chunks: ['main'], // 可以指定 html 中插入哪些代码块的资源
+      }),
+      new CleanWebpackPlugin({
+        cleanOnceBeforeBuildPatterns: ['**/*'],
+      }),
+      // 复制文件
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: path.resolve(__dirname, './src/static'),
+            to: path.resolve(__dirname, './dist/static'),
+          },
+        ],
+      }),
+      new MiniCssExtractPlugin({
+        filename: 'css/[name].css',
       }),
     ],
   };

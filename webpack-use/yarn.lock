@@ -968,6 +968,11 @@
     "@nodelib/fs.scandir" "2.1.4"
     fastq "^1.6.0"
 
+"@types/anymatch@*":
+  version "1.3.1"
+  resolved "https://registry.npm.taobao.org/@types/anymatch/download/@types/anymatch-1.3.1.tgz?cache=0&sync_timestamp=1613378017677&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fanymatch%2Fdownload%2F%40types%2Fanymatch-1.3.1.tgz#336badc1beecb9dacc38bea2cf32adf627a8421a"
+  integrity sha1-M2utwb7sudrMOL6izzKt9ieoQho=
+
 "@types/eslint-scope@^3.7.0":
   version "3.7.0"
   resolved "https://registry.npm.taobao.org/@types/eslint-scope/download/@types/eslint-scope-3.7.0.tgz#4792816e31119ebd506902a482caec4951fabd86"
@@ -1021,6 +1026,44 @@
   version "14.14.34"
   resolved "https://registry.npm.taobao.org/@types/node/download/@types/node-14.14.34.tgz?cache=0&sync_timestamp=1615550693937&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fnode%2Fdownload%2F%40types%2Fnode-14.14.34.tgz#07935194fc049069a1c56c0c274265abeddf88da"
   integrity sha1-B5NRlPwEkGmhxWwMJ0Jlq+3fiNo=
+
+"@types/source-list-map@*":
+  version "0.1.2"
+  resolved "https://registry.npm.taobao.org/@types/source-list-map/download/@types/source-list-map-0.1.2.tgz?cache=0&sync_timestamp=1613384391241&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40types%2Fsource-list-map%2Fdownload%2F%40types%2Fsource-list-map-0.1.2.tgz#0078836063ffaf17412349bba364087e0ac02ec9"
+  integrity sha1-AHiDYGP/rxdBI0m7o2QIfgrALsk=
+
+"@types/tapable@*":
+  version "1.0.6"
+  resolved "https://registry.npm.taobao.org/@types/tapable/download/@types/tapable-1.0.6.tgz#a9ca4b70a18b270ccb2bc0aaafefd1d486b7ea74"
+  integrity sha1-qcpLcKGLJwzLK8Cqr+/R1Ia36nQ=
+
+"@types/uglify-js@*":
+  version "3.13.0"
+  resolved "https://registry.npm.taobao.org/@types/uglify-js/download/@types/uglify-js-3.13.0.tgz#1cad8df1fb0b143c5aba08de5712ea9d1ff71124"
+  integrity sha1-HK2N8fsLFDxaugjeVxLqnR/3ESQ=
+  dependencies:
+    source-map "^0.6.1"
+
+"@types/webpack-sources@*":
+  version "2.1.0"
+  resolved "https://registry.npm.taobao.org/@types/webpack-sources/download/@types/webpack-sources-2.1.0.tgz#8882b0bd62d1e0ce62f183d0d01b72e6e82e8c10"
+  integrity sha1-iIKwvWLR4M5i8YPQ0Bty5ugujBA=
+  dependencies:
+    "@types/node" "*"
+    "@types/source-list-map" "*"
+    source-map "^0.7.3"
+
+"@types/webpack@^4.4.31":
+  version "4.41.26"
+  resolved "https://registry.npm.taobao.org/@types/webpack/download/@types/webpack-4.41.26.tgz#27a30d7d531e16489f9c7607c747be6bc1a459ef"
+  integrity sha1-J6MNfVMeFkifnHYHx0e+a8GkWe8=
+  dependencies:
+    "@types/anymatch" "*"
+    "@types/node" "*"
+    "@types/tapable" "*"
+    "@types/uglify-js" "*"
+    "@types/webpack-sources" "*"
+    source-map "^0.6.0"
 
 "@webassemblyjs/ast@1.11.0":
   version "1.11.0"
@@ -1955,6 +1998,14 @@ clean-stack@^2.0.0:
   resolved "https://registry.npm.taobao.org/clean-stack/download/clean-stack-2.2.0.tgz?cache=0&sync_timestamp=1605702448295&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fclean-stack%2Fdownload%2Fclean-stack-2.2.0.tgz#ee8472dbb129e727b31e8a10a427dee9dfe4008b"
   integrity sha1-7oRy27Ep5yezHooQpCfe6d/kAIs=
 
+clean-webpack-plugin@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.npm.taobao.org/clean-webpack-plugin/download/clean-webpack-plugin-3.0.0.tgz#a99d8ec34c1c628a4541567aa7b457446460c62b"
+  integrity sha1-qZ2Ow0wcYopFQVZ6p7RXRGRgxis=
+  dependencies:
+    "@types/webpack" "^4.4.31"
+    del "^4.1.1"
+
 cliui@^5.0.0:
   version "5.0.0"
   resolved "https://registry.npm.taobao.org/cliui/download/cliui-5.0.0.tgz?cache=0&sync_timestamp=1604880226973&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fcliui%2Fdownload%2Fcliui-5.0.0.tgz#deefcfdb2e800784aa34f46fa08e06851c7bbbc5"
@@ -2178,6 +2229,19 @@ copy-webpack-plugin@^4.4.1:
     minimatch "^3.0.4"
     p-limit "^1.0.0"
     serialize-javascript "^1.4.0"
+
+copy-webpack-plugin@^8.0.0:
+  version "8.0.0"
+  resolved "https://registry.npm.taobao.org/copy-webpack-plugin/download/copy-webpack-plugin-8.0.0.tgz#3db5efb80d492127507303d1842e35011e2f318f"
+  integrity sha1-PbXvuA1JISdQcwPRhC41AR4vMY8=
+  dependencies:
+    fast-glob "^3.2.5"
+    glob-parent "^5.1.1"
+    globby "^11.0.2"
+    normalize-path "^3.0.0"
+    p-limit "^3.1.0"
+    schema-utils "^3.0.0"
+    serialize-javascript "^5.0.1"
 
 core-js-compat@^3.8.1, core-js-compat@^3.9.0:
   version "3.9.1"
@@ -3115,7 +3179,7 @@ fast-glob@^2.2.6:
     merge2 "^1.2.3"
     micromatch "^3.1.10"
 
-fast-glob@^3.1.1:
+fast-glob@^3.1.1, fast-glob@^3.2.5:
   version "3.2.5"
   resolved "https://registry.npm.taobao.org/fast-glob/download/fast-glob-3.2.5.tgz?cache=0&sync_timestamp=1610876590762&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Ffast-glob%2Fdownload%2Ffast-glob-3.2.5.tgz#7939af2a656de79a4f1901903ee8adcaa7cb9661"
   integrity sha1-eTmvKmVt55pPGQGQPuityqfLlmE=
@@ -3477,7 +3541,7 @@ glob-parent@^3.1.0:
     is-glob "^3.1.0"
     path-dirname "^1.0.0"
 
-glob-parent@^5.0.0, glob-parent@^5.1.0:
+glob-parent@^5.0.0, glob-parent@^5.1.0, glob-parent@^5.1.1:
   version "5.1.2"
   resolved "https://registry.npm.taobao.org/glob-parent/download/glob-parent-5.1.2.tgz#869832c58034fe68a4093c17dc15e8340d8401c4"
   integrity sha1-hpgyxYA0/mikCTwX3BXoNA2EAcQ=
@@ -3525,7 +3589,7 @@ globals@^13.6.0:
   dependencies:
     type-fest "^0.20.2"
 
-globby@^11.0.1:
+globby@^11.0.1, globby@^11.0.2:
   version "11.0.2"
   resolved "https://registry.npm.taobao.org/globby/download/globby-11.0.2.tgz#1af538b766a3b540ebfb58a32b2e2d5897321d83"
   integrity sha1-GvU4t2ajtUDr+1ijKy4tWJcyHYM=
@@ -4785,6 +4849,15 @@ mimic-fn@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npm.taobao.org/mimic-fn/download/mimic-fn-2.1.0.tgz#7ed2c2ccccaf84d3ffcb7a69b57711fc2083401b"
   integrity sha1-ftLCzMyvhNP/y3pptXcR/CCDQBs=
+
+mini-css-extract-plugin@^1.3.9:
+  version "1.3.9"
+  resolved "https://registry.npm.taobao.org/mini-css-extract-plugin/download/mini-css-extract-plugin-1.3.9.tgz#47a32132b0fd97a119acd530e8421e8f6ab16d5e"
+  integrity sha1-R6MhMrD9l6EZrNUw6EIej2qxbV4=
+  dependencies:
+    loader-utils "^2.0.0"
+    schema-utils "^3.0.0"
+    webpack-sources "^1.1.0"
 
 minimalistic-assert@^1.0.0:
   version "1.0.1"
@@ -6403,7 +6476,7 @@ sockjs@^0.3.21:
     uuid "^3.4.0"
     websocket-driver "^0.7.4"
 
-source-list-map@^2.0.1:
+source-list-map@^2.0.0, source-list-map@^2.0.1:
   version "2.0.1"
   resolved "https://registry.npm.taobao.org/source-list-map/download/source-list-map-2.0.1.tgz#3993bd873bfc48479cca9ea3a547835c7c154b34"
   integrity sha1-OZO9hzv8SEecyp6jpUeDXHwVSzQ=
@@ -6449,7 +6522,7 @@ source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.0, source-map@~0.6.1:
   resolved "https://registry.npm.taobao.org/source-map/download/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
   integrity sha1-dHIq8y6WFOnCh6jQu95IteLxomM=
 
-source-map@~0.7.2:
+source-map@^0.7.3, source-map@~0.7.2:
   version "0.7.3"
   resolved "https://registry.npm.taobao.org/source-map/download/source-map-0.7.3.tgz#5302f8169031735226544092e64981f751750383"
   integrity sha1-UwL4FpAxc1ImVECS5kmB91F1A4M=
@@ -7233,6 +7306,14 @@ webpack-merge@^5.7.3:
   dependencies:
     clone-deep "^4.0.1"
     wildcard "^2.0.0"
+
+webpack-sources@^1.1.0:
+  version "1.4.3"
+  resolved "https://registry.npm.taobao.org/webpack-sources/download/webpack-sources-1.4.3.tgz?cache=0&sync_timestamp=1603965213388&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fwebpack-sources%2Fdownload%2Fwebpack-sources-1.4.3.tgz#eedd8ec0b928fbf1cbfe994e22d2d890f330a933"
+  integrity sha1-7t2OwLko+/HL/plOItLYkPMwqTM=
+  dependencies:
+    source-list-map "^2.0.0"
+    source-map "~0.6.1"
 
 webpack-sources@^2.1.1:
   version "2.2.0"

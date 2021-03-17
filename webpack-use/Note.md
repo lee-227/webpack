@@ -181,3 +181,31 @@ console.log(p);
 ```js
 <script src="https://polyfill.io/v3/polyfill.min.js"></script>
 ```
+
+## webpack-dev-middleware
+webpack-dev-middleware 就是在 Express 中提供 webpack-dev-server 静态服务能力的一个中间件
+```js
+const express = require('express');
+const app = express();
+const webpack = require('webpack');
+const webpackDevMiddleware = require('webpack-dev-middleware');
+const webpackOptions = require('./webpack.config');
+webpackOptions.mode = 'development';
+const compiler = webpack(webpackOptions);
+app.use(webpackDevMiddleware(compiler, {}));
+app.listen(3000);
+```
+使用webpack-dev-middleware的好处是可以**在既有的 Express 代码基础上快速添加 webpack-dev-server 的功能**，同时利用 Express 来根据需要添加更多的功能，如 mock 服务、代理 API 请求等
+
+## hash、chunkhash 和 contenthash
+**文件指纹**是指打包后输出的文件名和后缀
+hash一般是结合CDN缓存来使用，通过webpack构建之后，生成对应文件名自动带上对应的MD5值。如果文件内容改变的话，那么对应文件哈希值也会改变，对应的HTML引用的URL地址也会改变，触发CDN服务器从源服务器上拉取对应数据，进而更新本地缓存。
+
+## 指纹占位符
+ext 资源后缀名
+name 文件名
+path 文件的相对路径
+folder 文件所在文件夹
+hash 每次 webpack 都会生出一个唯一 hash **每次都会变**
+chunkhash 每个 chunk 生成与一个hash **chunk 依赖的文件不变 hash 不变**
+contenthash 根据每个文件内容生成的 hash **文件内容变了 hash才会变**
