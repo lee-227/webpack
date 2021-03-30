@@ -4,6 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>lee</title>
+    <script>
+      let docEle = document.documentElement;
+      function setRemUnit() {
+        docEle.style.fontSize = docEle.clientWidth / 10 + 'px';
+      }
+      setRemUnit();
+      window.addEventListener('resize', setRemUnit);
+    </script>
   </head>
 
   <body>
@@ -12,5 +20,6 @@
     <div id="less">scss</div>
     <div id="img" style="height: 100px; width: 100px"></div>
     <img src="./assets/images/bg.jpg" style="height: 100px; width: 100px" />
+    <input type="text" placeholder="css兼容性测试" style="display: block" />
   </body>
 </html>

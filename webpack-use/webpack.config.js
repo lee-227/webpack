@@ -3,7 +3,11 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+require('dotenv').config(); // 读取 env 文件，将文件内容添加到 process.env 上
 
+console.log(process.env.LEE);
 module.exports = (env, argv) => {
   console.log('env', env);
   console.log('argv', argv);
@@ -13,7 +17,7 @@ module.exports = (env, argv) => {
     // 默认会启用各种性能优化的功能，包括构建结果优化以及 webpack 运行性能优化
     // development 模式:会将模块内的 process.env.NODE_ENV 的值设为 development。
     // 默认会开启 debug 工具，运行时打印详细的错误信息，以及更加快速的增量编译构建
-    mode: 'development',
+    mode: env.production ? 'production' : 'development',
     // devtool: 'source-map',
     // entry: './src/index.js', // 设置入口文件 默认值是 ./src/index.js
     entry: {
@@ -34,6 +38,7 @@ module.exports = (env, argv) => {
       contentBase: path.resolve(__dirname, '/static'), // 额外的静态资源路径
       port: 8000,
       open: true,
+      compress: true, // 开启 gzip 压缩
       // publicPath:'/lee' // 打包生成的静态文件所在的位置，默认找 output 下的 publicPaht 值
       before: (app) => {
         // 本质上 devSever 启用的是 express 服务器 可以通过这个方法 mock 接口数据
@@ -55,6 +60,10 @@ module.exports = (env, argv) => {
       ignored: /node_modules/, // 忽略哪些文件
       aggregateTimeout: 300, // 文件发生变化后 过 300 ms重新编译
       poll: 1000, // 每秒钟访问1000次文件查看是否文件改变，数值越大越敏感
+    },
+    optimization: {
+      minimize: env.production || false,
+      minimizer: [new TerserPlugin()], // 优化和压缩JS资源的插件
     },
     module: {
       // webpack 只能识别js跟json文件 而loader的作用是让webpack可以处理其他类型的文件，并将他们转换为有效的模块，供程序使用，以及将该模块添加到依赖图中
@@ -84,14 +93,37 @@ module.exports = (env, argv) => {
             },
           },
         },
-        { test: /\.css$/, use: ['style-loader', 'css-loader'] }, // 通过 loader 处理css文件 style-loader 处理样式把CSS插入DOM 中 css-loader 处理css文件中的样式引入问题 @import和url()
+        {
+          test: /\.css$/,
+          use: [
+            'style-loader',
+            'css-loader',
+            {
+              loader: 'px2rem-loader', // px 转 rem remUnit 根据设计稿宽度决定
+              options: {
+                remUnit: 75,
+              },
+            },
+          ],
+        },
+        // 通过 loader 处理css文件 style-loader 处理样式把CSS插入DOM 中 css-loader 处理css文件中的样式引入问题 @import和url()
         {
           test: /\.scss$/,
-          use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+          use: [
+            MiniCssExtractPlugin.loader,
+            'css-loader',
+            'postcss-loader', // css 兼容
+            'sass-loader',
+          ],
         },
         {
           test: /\.less$/,
-          use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader'],
+          use: [
+            MiniCssExtractPlugin.loader,
+            'css-loader',
+            'postcss-loader',
+            'less-loader',
+          ],
         },
         {
           test: /\.(jpg|png|gif|svg|bmp)$/, // file-loader 处理CSS等文件中的引入图片路径问题
@@ -106,6 +138,28 @@ module.exports = (env, argv) => {
                 publicPath: '/images', // 输出目录修改时 引入的路径也要修改
               },
             },
+            // {
+            //   loader: 'image-webpack-loader',
+            //   options: {
+            //     mozjpeg: {
+            //       progressive: true,
+            //       quality: 65,
+            //     },
+            //     optipng: {
+            //       enabled: false,
+            //     },
+            //     pngquant: {
+            //       quality: '65-90',
+            //       speed: 4,
+            //     },
+            //     gifsicle: {
+            //       interlaced: false,
+            //     },
+            //     webp: {
+            //       quality: 75,
+            //     },
+            //   },
+            // },
           ],
         },
         {
@@ -125,6 +179,11 @@ module.exports = (env, argv) => {
     plugins: [
       new HtmlWebpackPlugin({
         template: './src/index.html',
+        minify: {
+          // 开启 HTML 压缩
+          collapseWhitespace: true,
+          removeComments: true,
+        },
         // chunks: ['main'], // 可以指定 html 中插入哪些代码块的资源
       }),
       new CleanWebpackPlugin({
@@ -142,6 +201,7 @@ module.exports = (env, argv) => {
       new MiniCssExtractPlugin({
         filename: 'css/[name].css',
       }),
-    ],
+      env.production && new OptimizeCssAssetsWebpackPlugin(), // 优化和压缩CSS资源的插件
+    ].filter(Boolean),
   };
 };
