@@ -76,7 +76,8 @@ function newast(){}
   - 深度优先遍历
   - 访问者模式 Visitor
     - Visitor 定义了用于获取 AST 中具体节点的方法。
-    - Visitor 上挂载了以节点 type 命名的方法，如果匹配上 type 就会执行对应方法。
+    - Visitor 上挂载了以节点 type 命名的方法，如果匹配上 type 就会执行对应方法。该方法对应 enter 方法
+    - Visitor 以节点 type 命名的对象，需要提供 enter exit 两个方法
 - 插件
   - [可视化AST](https://astexplorer.net/)
   - [@babel/core](https://www.npmjs.com/package/@babel/core) Babel的编译器，包含了核心API，负责生成 AST 语法树，遍历 AST 语法树，根据语法树生成代码。
