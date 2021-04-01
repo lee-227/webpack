@@ -1,3 +1,5 @@
-import(/* webpackChunkName: "hello" */ './hello').then((result) => {
-  console.log(result.default);
-});
+import { isArray, isString } from 'lodash';
+// import isArray from 'lodash/isArray';
+// import isString from 'lodash/isString';
+console.log(isArray([]));
+console.log(isString([]));

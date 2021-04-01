@@ -9,18 +9,12 @@ module.exports = {
       // nodePath 是节点的数据
       let node = nodePath.node;
       let id = node.id;
-      // 声明普通函数
-      let constructorFunction = t.functionDeclaration(
-        id,
-        [],
-        t.blockStatement([]),
-        false,
-        false
-      );
+      // 获取类中的所有方法 constructor 跟 普通方法
       let methods = node.body.body;
       let functions = [];
       methods.forEach((m) => {
         if (m.kind === 'constructor') {
+          // 将构造函数变成普通函数
           constructorFunction = t.functionDeclaration(
             id,
             m.params,
@@ -30,6 +24,7 @@ module.exports = {
           );
           functions.push(constructorFunction);
         } else {
+          // 将其他方法声明成类原型上的方法
           let memberObj = t.memberExpression(
             t.memberExpression(id, t.identifier('prototype')),
             m.key

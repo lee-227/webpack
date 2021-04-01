@@ -78,9 +78,11 @@ function newast(){}
     - Visitor 定义了用于获取 AST 中具体节点的方法。
     - Visitor 上挂载了以节点 type 命名的方法，如果匹配上 type 就会执行对应方法。
 - 插件
+  - [可视化AST](https://astexplorer.net/)
   - [@babel/core](https://www.npmjs.com/package/@babel/core) Babel的编译器，包含了核心API，负责生成 AST 语法树，遍历 AST 语法树，根据语法树生成代码。
   - [babylon](http://www.zhufengpeixun.com/grow/html/103.4.webpack-ast.html) Babel 使用的解析器。
   - [babel-types](https://github.com/babel/babel/tree/master/packages/babel-types) 用于AST节点的工具库，包含了构造、验证、变化 AST 节点的方法，对于编写处理 AST 逻辑非常有用。
+  - [@babel/template](https://babeljs.io/docs/en/babel-template) 把一个JS字符串转成AST语法树节点
   - [babel-traverse](https://www.npmjs.com/package/babel-traverse) 用于对AST进行遍历，维护整棵树的状态，并且负责替换，移除和添加节点。
   - [babel-types-api](https://babeljs.io/docs/en/next/babel-types.html)
   - [Babel 插件](https://github.com/brigand/babel-plugin-handbook/blob/master/translations/zh-Hans/README.md#asts)

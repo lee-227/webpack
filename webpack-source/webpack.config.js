@@ -10,7 +10,31 @@ module.exports = {
     filename: 'main.js',
     chunkFilename: '[name].lee.js',
   },
-  module: {},
+  module: {
+    rules: [
+      {
+        test: /.js$/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            plugins: [
+              [
+                path.resolve(
+                  __dirname,
+                  'source/6.Babel/babel-plugin-import/plugin.js'
+                ),
+                {
+                  libraryName: 'lodash',
+                  libraryDirectory: '',
+                  camel2DashComponentName: false, // default: true
+                },
+              ],
+            ],
+          },
+        },
+      },
+    ],
+  },
   plugins: [
     new CleanWebpackPlugin({ cleanOnceBeforeBuildPatterns: ['**/*'] }),
     new HtmlWebpackPlugin({
