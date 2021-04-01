@@ -87,3 +87,4 @@ function newast(){}
   - [babel 可视化编译器](https://babeljs.io/en/repl.html)
 - 手写插件
   - [转换箭头函数](../source/6.Babel/babel-plugin-transform-es2015-arrow-functions/demo.js)
+  - [class转es5](../source/6.Babel/plugin-transform-classes/demo.js)
