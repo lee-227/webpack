@@ -1,6 +1,6 @@
 let path = require('path');
 let fs = require('fs');
-let { runLoaders } = require('loader-runner');
+let { runLoaders } = require('./loader-runner');
 let filePath = path.resolve(__dirname, 'src', 'index.js');
 let request = `inline-loader1!inline-loader2!${filePath}`;
 let parts = request.replace(/^-?!+/, '').split('!');
