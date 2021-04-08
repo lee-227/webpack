@@ -1,4 +1,4 @@
-[大致工作流demo](../source/7.work-flow/dubugger.js)
+[大致工作流demo](./dubugger.js)
 1. 初始化参数：从配置文件跟shell命令行中读取并合并参数，得出最终的配置对象。（命令行优先级高）
 2. 调用webpack方法，传入最终的配置对象 获取 Compiler 核心编译对象
 3. 加载所有的插件
