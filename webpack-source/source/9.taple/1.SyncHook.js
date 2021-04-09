@@ -1,4 +1,4 @@
-const { SyncHook } = require('tapable');
+const { SyncHook } = require('./source/index');
 // 所有的构造函数都接收一个可选参数，参数是一个参数名的字符串数组
 // 参数的名字可以任意填写，但是参数数组的长数必须要根实际接受的参数个数一致
 // 如果回调函数不接受参数，可以传入空数组
