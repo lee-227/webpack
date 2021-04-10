@@ -23,7 +23,7 @@ module.exports = class Hook {
   }
   // 3. 初始化option 跟 tapInfo
   _tap(type, options, fn) {
-    if ((options = 'string')) {
+    if (options === 'string') {
       options = { name: options };
     }
     let tapInfo = { ...options, type, fn };
@@ -44,11 +44,42 @@ module.exports = class Hook {
   intercept(interceptor) {
     this.interceptors.push(interceptor);
   }
-  _insert(tap) {
+  _insert(tapInfo) {
     // 4. 每次调用tap时 重新生成 call 方法
     this._resetCompilation();
+    let before;
+    if (typeof tapInfo.before === 'string') {
+      before = new Set([tapInfo.before]);
+    } else if (Array.isArray(tapInfo.before)) {
+      before = new Set(tapInfo.before);
+    }
     // 5. 存储tap
-    this.taps.push(tap);
+    let stage = 0;
+    if (typeof tapInfo.stage === 'number') {
+      stage = tapInfo.stage;
+    }
+    let i = this.taps.length;
+    while (i > 0) {
+      i--;
+      const x = this.taps[i];
+      this.taps[i + 1] = x;
+      const xStage = x.stage || 0;
+      if (before) {
+        if (before.has(x.name)) {
+          before.delete(x.name);
+          continue;
+        }
+        if (before.size > 0) {
+          continue;
+        }
+      }
+      if (xStage > stage) {
+        continue;
+      }
+      i++;
+      break;
+    }
+    this.taps[i] = tapInfo;
   }
   _resetCompilation() {
     this.call = CALL_DELEGATE;
