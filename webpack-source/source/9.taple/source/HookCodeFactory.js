@@ -19,7 +19,21 @@ module.exports = class HookCodeFactory {
       case 'sync':
         fn = new Function(this.args(), this.header() + this.content()); // 12. this.content() 调用子类的content方法
         break;
-
+      case 'async':
+        fn = new Function(
+          // 为生成的函数 调价一个回调参数
+          this.args({ after: '_callback' }),
+          // 函数体中调价回调函数的调用
+          this.header() + this.content({ onDone: () => ' _callback();\n' })
+        );
+        break;
+      case 'promise':
+        let tapsContent = this.content({ onDone: () => ' _resolve();\n' });
+        let content = `return new Promise(function (_resolve, _reject) {
+                           ${tapsContent}
+                       })`;
+        fn = new Function(this.args(), this.header() + content);
+        break;
       default:
         break;
     }
@@ -52,6 +66,19 @@ module.exports = class HookCodeFactory {
     }
     return code;
   }
+  callTapsParallel({ onDone }) {
+    let code = `var _counter = ${this.options.taps.length};\n`;
+    code += `
+               var _done = function () {
+                ${onDone()}
+               };
+           `;
+    for (let j = 0; j < this.options.taps.length; j++) {
+      const content = this.callTap(j);
+      code += content;
+    }
+    return code;
+  }
   callTap(index) {
     let code = '';
     code += `var _fn${index} = _x[${index}];\n`;
@@ -60,7 +87,25 @@ module.exports = class HookCodeFactory {
       case 'sync':
         code += `_fn${index}(${this.args()});\n`;
         break;
-
+      case 'async':
+        code += ` 
+            _fn${index}(${this.args({
+          after: `function (_err${index}) {
+            if (--_counter === 0) _done();
+          }`,
+        })});`;
+        break;
+      case 'promise':
+        code = `
+              var _fn${index} = _x[${index}];
+              var _promise${index} = _fn${index}(${this.args()});
+              _promise${index}.then(
+                  function () {
+                    if (--_counter === 0) _done();
+                  }
+              );
+          `;
+        break;
       default:
         break;
     }

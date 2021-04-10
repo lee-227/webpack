@@ -1,5 +1,5 @@
 // 异步并行执行钩子
-let { AsyncParallelHook } = require('tapable');
+let { AsyncParallelHook } = require('./source/index');
 let queue = new AsyncParallelHook(['name']);
 
 // tap 同步注册
@@ -44,31 +44,31 @@ let queue = new AsyncParallelHook(['name']);
 // });
 
 // tapPromise 注册钩子 全部完成后执行才算成功
-// console.time('cost');
-// queue.tapPromise('1', function (name) {
-//   return new Promise(function (resolve, reject) {
-//     setTimeout(function () {
-//       console.log(1);
-//       resolve();
-//     }, 1000);
-//   });
-// });
-// queue.tapPromise('2', function (name) {
-//   return new Promise(function (resolve, reject) {
-//     setTimeout(function () {
-//       console.log(2);
-//       resolve();
-//     }, 2000);
-//   });
-// });
-// queue.tapPromise('3', function (name) {
-//   return new Promise(function (resolve, reject) {
-//     setTimeout(function () {
-//       console.log(3);
-//       resolve();
-//     }, 3000);
-//   });
-// });
-// queue.promise('lee').then(() => {
-//   console.timeEnd('cost');
-// });
+console.time('cost');
+queue.tapPromise('1', function (name) {
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
+      console.log(1);
+      resolve();
+    }, 1000);
+  });
+});
+queue.tapPromise('2', function (name) {
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
+      console.log(2);
+      resolve();
+    }, 2000);
+  });
+});
+queue.tapPromise('3', function (name) {
+  return new Promise(function (resolve, reject) {
+    setTimeout(function () {
+      console.log(3);
+      resolve();
+    }, 3000);
+  });
+});
+queue.promise('lee').then(() => {
+  console.timeEnd('cost');
+});
