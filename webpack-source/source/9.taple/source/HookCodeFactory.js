@@ -54,6 +54,15 @@ module.exports = class HookCodeFactory {
     let code = '';
     // this指向 SyncHook实例
     code += 'var _x = this._x;\n';
+    if (this.options.interceptors.length > 0) {
+      code += `var _taps = this.taps;\n`;
+      code += `var _interceptors = this.interceptors;\n`;
+    }
+    for (let k = 0; k < this.options.interceptors.length; k++) {
+      const interceptor = this.options.interceptors[k];
+      if (interceptor.call)
+        code += `_interceptors[${k}].call(${this.args()});\n`;
+    }
     return code;
   }
   // 14. 遍历每个tap 根据其type 生成函数体
@@ -81,6 +90,15 @@ module.exports = class HookCodeFactory {
   }
   callTap(index) {
     let code = '';
+    if (this.options.interceptors.length > 0) {
+      code += `var _tap${index} = _taps[${index}];`;
+      for (let i = 0; i < this.options.interceptors.length; i++) {
+        let interceptor = this.options.interceptors[i];
+        if (interceptor.tap) {
+          code += `_interceptors[${i}].tap(_tap${index});`;
+        }
+      }
+    }
     code += `var _fn${index} = _x[${index}];\n`;
     let tap = this.options.taps[index];
     switch (tap.type) {

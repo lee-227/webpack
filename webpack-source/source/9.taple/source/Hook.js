@@ -8,6 +8,7 @@ module.exports = class Hook {
     this.call = CALL_DELEGATE;
     this.callAsync = CALL_ASYNC_DELEGATE;
     this.promise = PROMISE_DELEGATE;
+    this.interceptors = [];
   }
   // 2. 调用tap注册事件
   tap(options, fn) {
@@ -26,7 +27,22 @@ module.exports = class Hook {
       options = { name: options };
     }
     let tapInfo = { ...options, type, fn };
+    tapInfo = this._runRegisterInterceptors(tapInfo);
     this._insert(tapInfo);
+  }
+  _runRegisterInterceptors(tapInfo) {
+    for (const interceptor of this.interceptors) {
+      if (interceptor.register) {
+        let newTapInfo = interceptor.register(tapInfo);
+        if (newTapInfo) {
+          tapInfo = newTapInfo;
+        }
+      }
+    }
+    return tapInfo;
+  }
+  intercept(interceptor) {
+    this.interceptors.push(interceptor);
   }
   _insert(tap) {
     // 4. 每次调用tap时 重新生成 call 方法
@@ -45,6 +61,7 @@ module.exports = class Hook {
     return this.compile({
       taps: this.taps,
       args: this.args,
+      interceptors: this.interceptors,
       type,
     });
   }
