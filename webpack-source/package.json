@@ -27,6 +27,7 @@
     "webpack-cli": "^4.6.0"
   },
   "dependencies": {
+    "jszip": "^3.6.0",
     "lodash": "^4.17.21",
     "mime": "^2.5.2"
   }
