@@ -117,10 +117,16 @@ const FileManagerPlugin = require('filemanager-webpack-plugin');
 - @babel/plugin-proposal-class-properties 转换静态类属性以及使用属性初始值化语法声明的属性
 
 ### babel-polyfill
+- @babel/preset-env会根据预设的浏览器兼容列表从stage-4选取必须的plugin，也就是说，不引入别的stage-x，@babel/preset-env将只支持到stage-4
+- 三个概念
+  - 最新ES 语法：比如，箭头函数
+  - 最新ES API：，比如，Promise
+  - 最新ES 实例方法：比如，String.prototype.includes
 - Babel 默认只转换新的 javascript 语法，而不转换新的API，比如 Iterator, Generator, Set, Maps, Proxy, Reflect,Symbol,Promise 等全局对象。以及一些在全局对象上的方法(比如 Object.assign)都不会转码，**如果想让这些方法运行，必须使用 babel-polyfill 来转换**
 - **babel-polyfill 它是通过向全局对象和内置对象的 prototype 上添加方法来实现的**。比如运行环境中不支持Array.prototype.find方法，引入polyfill，我们就可以使用es6方法来编写了，但是**缺点就是会造成全局空间污染**
 
   #### 使用方法：
+  - @babel/preset-env默认支持语法转化，需要开启useBuiltIns配置才能转化API和实例方法
   在 @babel/preset-env 下做预设
   - "useBuiltIns": false 此时不对 polyfill 做操作。如果引入 @babel/polyfill，则无视配置的浏览器兼容，引入所有的 polyfill
   - "useBuiltIns": "entry" 根据配置的浏览器兼容，引入浏览器不兼容的 polyfill。需要在入口文件手动添加 import '@babel/polyfill'，会自动根据 browserslist 替换成浏览器不兼容的所有 polyfill，这里需要指定 core-js 的版本, 如果 "corejs": 3, 则 import '@babel/polyfill' 需要改成 import 'core-js/stable';import 'regenerator-runtime/runtime';
@@ -153,29 +159,29 @@ import Promise from 'babel-runtime/core-js/promise';
 const p = new Promise(()=> {});
 console.log(p);
 ```
-  #### babel-plugin-transform-runtime 自动引入对应的polyfill
-  - 启用插件babel-plugin-transform-runtime后，Babel就会使用babel-runtime下的工具函数。
-  - babel-plugin-transform-runtime插件能够将这些工具函数的代码**转换成require语句**，指向为对babel-runtime的引用
-  ```js
-  {
-    test: /\.jsx?$/,
-    use: {
-      loader: 'babel-loader',
-      options: {
-        plugins:[
-          [
-            "@babel/plugin-transform-runtime",
-            {
-              corejs: 2,//当我们使用 ES6 的静态事件或内置对象时自动引入 babel-runtime/core-js
-              helpers: true,//移除内联babel helpers并替换使用babel-runtime/helpers 来替换
-              regenerator: true,//是否开启generator函数转换成使用regenerator runtime来避免污染全局域
-            },
-          ],
-        ]
-      },
+#### babel-plugin-transform-runtime 自动引入对应的polyfill
+- 启用插件babel-plugin-transform-runtime后，Babel就会使用babel-runtime下的工具函数。
+- babel-plugin-transform-runtime插件能够将这些工具函数的代码**转换成require语句**，指向为对babel-runtime的引用
+```js
+{
+  test: /\.jsx?$/,
+  use: {
+    loader: 'babel-loader',
+    options: {
+      plugins:[
+        [
+          "@babel/plugin-transform-runtime",
+          {
+            corejs: 2,//当我们使用 ES6 的静态事件或内置对象时自动引入 babel-runtime/core-js
+            helpers: true,//移除内联babel helpers并替换使用babel-runtime/helpers 来替换
+            regenerator: true,//是否开启generator函数转换成使用regenerator runtime来避免污染全局域
+          },
+        ],
+      ]
     },
   },
-  ```
+},
+```
 **总结：babel-runtime适合在组件和类库项目中使用，而babel-polyfill适合在业务项目中使用。**
 ### polyfill-service 自动化的 JavaScript Polyfill 服务 通过分析请求头信息中的 UserAgent 实现自动加载浏览器所需的 polyfills
 ```js
