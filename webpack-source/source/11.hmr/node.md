@@ -14,7 +14,7 @@
    - 启动webpack-dev-server服务器
      - 创建 webpack 实例
      - 创建 Server 服务器
-       - 更新webpack实例的entry入口，此时会注入socket客户端代码，以及热更新的一些逻辑代码，比如代码的拉取，执行
+       - 更新webpack实例的entry入口，此时会注入socket客户端代码
        - 添加 webpack 的 done 事件回调，在每次编译完成时使用socket向浏览器发送消息
        - 创建express应用app
        - 添加express中间件 webpack-dev-middleware
@@ -24,6 +24,7 @@
        - 通过socketIo 创建socket服务 建立与浏览器端的长连接
      - 调用server.listen启动服务
 2. 客户端部分
+   - HotModuleReplacementPlugin 给模块添加了hot对象，使用accept注册热更新逻辑代码
    - 注入的 socket 客户端
      - 连接 webaocket 服务器
      - 监听 hash 事件 保存 hash 值
@@ -31,11 +32,9 @@
      - 在 reloadApp 方法中会进行判断，是否支持热更新，支持就发射 webpackHotUpdate 事件，不支持直接刷新浏览器
    - webpack/hot/dev-server.js 会监听 webpackHotUpdate 事件
    - 在 check 方法中调用 module.hot.check 方法
-   - 调用 hotDownloadManifest 向 Server 发送请求，服务端返回Manifest文件（lastHash.hot-update.json） ，该文件包含了本次编译hash值跟更新模块的名字
-   - 调用 JsonpMainTemplate.runtime 的 hotDownloadUpdateChunk 方法通过JSONP请求获取到最新的模块代码
-   - 补丁JS取回来后会调用 JsonpMainTemplate.runtime.js 的 webpackHotUpdate 方法
-   - 然后会调用 HotModuleReplacement.runtime.js 的 hotAddUpdateChunk 方法动态更新模块代码
-   - 然后调用 hotApply 方法进行热更新
+   - 向 Server 发送请求，服务端返回Manifest文件（lastHash.hot-update.json） ，该文件包含了本次编译hash值跟更新模块的名字
+   - 根据 lastHash.hot-update.json 文件提供的模块更新信息，通过JSONP请求 lastHash.hot-update.js 获取到最新的模块代码
+   - 补丁JS取回来后会调用  webpackHotUpdate 方法 通过最新的代码块id跟模块内容 还有模块依赖关系 找到所有要更新的模块 调用注册的热更新逻辑代码 完成热更新
 
 ## 流程图
 ![](images/1608382424775.jpg)
