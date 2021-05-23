@@ -215,3 +215,50 @@ folder 文件所在文件夹
 hash 每次 webpack 都会生出一个唯一 hash **每次都会变**
 chunkhash 每个 chunk 生成与一个hash **chunk 依赖的文件不变 hash 不变**
 contenthash 根据每个文件内容生成的 hash **文件内容变了 hash才会变**
+
+## HMR
+```js
+devServe:{
+  hot:true,// 启用热更新，且热更新逻辑报错时，自动使用刷新浏览器加载最新代码
+  hotOnly:true,// 启用热更新，热更新逻辑报错时，浏览器报错，不再加载新代码
+}
+```
+- 启用热更新后，css代码就可以立即看到热更新效果，并没有使用热更新逻辑，这是因为在style-loader中已经处理了css的热更新的逻辑。
+- 在其它模块中，需要自己处理热更新逻辑
+```js
+// 开启也更新之后 在 module 对象上会有一个 hot 对象 通过他的 accept 处理热更新逻辑
+module.hot.accept('要处理的模块路径',()=>{
+  // 模块处理逻辑
+})
+```
+- 热更新的逻辑代码 在生产环境的代码中会被移除掉 不影响代码
+
+## TreeShaking
+- 使用 tree-shaking 的前提是需要使用 es 模块
+- webpack 在生产环境会自动使用此功能，优化代码
+```
+{
+  optimization:{
+    usedExports:true, // 只打包用到的导出对象
+    minimize：true, // 压缩代码，去除无用代码
+    concatenateModules:true, // 尽可能地将所有模块都合并到一个函数中，减少代码体积
+    sideEffect:true, // 移除没有副作用的代码，在package.json 的 sideEffects 中标记 1. 设置为false则全部模块都没有副作用，没有用到的模块会被移除 2. 设置为数组 存放有副作用的模块路径，打包时这个代码尽管没用到也会被打包
+  }
+}
+```
+
+## 代码分割
+- 多入口打包
+  - 公共模块提取
+```js
+optimization:{
+    splitChunks:{
+      chunks:'all' // 此时打包时会把各个入口都引入的包提取到另一个文件中
+    }
+}
+```
+- 动态导入
+  - 动态导入的模块会自动分包
+```js
+import(/* webpackChunkName:'module' */'模块路径').then(module=>{}) // 魔法注释，分包之后该文件的名字
+```

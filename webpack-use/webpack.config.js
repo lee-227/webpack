@@ -63,7 +63,7 @@ module.exports = (env, argv) => {
     },
     optimization: {
       minimize: env.production || false,
-      minimizer: [new TerserPlugin()], // 优化和压缩JS资源的插件
+      minimizer: [new TerserPlugin(), new OptimizeCssAssetsWebpackPlugin()], // 优化和压缩JS资源的插件
     },
     module: {
       // webpack 只能识别js跟json文件 而loader的作用是让webpack可以处理其他类型的文件，并将他们转换为有效的模块，供程序使用，以及将该模块添加到依赖图中
@@ -200,8 +200,8 @@ module.exports = (env, argv) => {
       }),
       new MiniCssExtractPlugin({
         filename: 'css/[name].css',
-      }),
-      env.production && new OptimizeCssAssetsWebpackPlugin(), // 优化和压缩CSS资源的插件
+      }), // css 代码分割
+      env.production && new OptimizeCssAssetsWebpackPlugin(), // 优化和压缩CSS资源的插件 一可以放到 optimization中
     ].filter(Boolean),
   };
 };
