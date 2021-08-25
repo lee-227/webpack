@@ -262,3 +262,14 @@ optimization:{
 ```js
 import(/* webpackChunkName:'module' */'模块路径').then(module=>{}) // 魔法注释，分包之后该文件的名字
 ```
+
+## 如何利用 webpack 优化前端性能
+1. 代码压缩
+2. tree shaking 通过 babel 启用
+3. 通过 webpack 的作用域提升 让 Webpack 打包出来的代码文件更小、运行的更快。producetion 模式下启用 ModuleConcatenationPlugin
+4. 代码分割 
+   1. 入口点分割 不够灵活，不适用 spa 项目
+   2. 动态导入 import 
+      1. preload 预加载
+      2. prefetch 预先拉取
+   3. splitChunks 分割公共代码
