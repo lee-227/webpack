@@ -29,6 +29,7 @@ module.exports = (env, argv) => {
       chunkFilename: '[name].[hash:10].js', // 非入口代码块的名称 两个来源 1.代码分割 common vendor 2.懒加载 import 导入的模块
       // filename: 'main.js', // 打包后文件名
       // publicPath: '/lee', // 引用资源路径要加的前缀
+      // 不清楚具体路径时可以留空，然后再应用的入口文件设置__webpack_public_path__，实现在运行时进行动态设置
     },
     // devServer 会启动一个 HTTP 开发服务器，把一个文件夹作为静态根目录
     // 为了提高性能，使用的内存文件系统
