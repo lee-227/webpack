@@ -1,5 +1,4 @@
-# Babel plugin's loose and legacy option.
-## Babel loose mode
+# Babel loose mode
 官方警告⚠️: Babel 的 loose 模式会将 ES6 代码转换为不太忠实于 ES6 语义的 ES5 代码。
 
 ## Two modes
@@ -295,3 +294,97 @@ try {
 ## 参考资料: 
 - https://2ality.com/2015/12/babel6-loose-mode.html
 - [@babel/preset-env 包含的插件](https://github.com/babel/babel/blob/main/packages/babel-preset-env/src/available-plugins.ts)
+
+# Babel legacy
+## legacy 
+- Use the legacy (stage 1) decorators syntax and behavior.
+- 使用遗留(阶段1)装饰器语法和行为。
+- 这个选项主要是用于 [@babel/plugin-proposal-decorators](https://babeljs.io/docs/en/babel-plugin-proposal-decorators#legacy) 插件 
+
+## 官方介绍
+- @babel/plugin-proposal-decorators 作用
+    - 转义项目中使用的装饰器语法
+
+- 使用 @babel/plugin-proposal-decorators 注意事项
+1. 如果您手动包含插件并使用 @babel/plugin-proposal-class-properties，请确保 @babel/plugin-proposal-decorators 出现在 @babel/plugin-proposal-class-properties 之前。
+```js
+// wrong
+{
+  "plugins": [
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-decorators"
+  ]
+}
+
+//right
+{
+  "plugins": [
+    "@babel/plugin-proposal-decorators",
+    "@babel/plugin-proposal-class-properties"
+  ]
+}
+```
+
+2. 最新版本下 当使用 legacy: true 模式时，必须启用设置的  setPublicClassFields 来支持 @babel/plugin-proposal-decorator。
+```js
+{
+  "assumptions": {
+    "setPublicClassFields": true
+  },
+  "plugins": [
+    ["@babel/plugin-proposal-decorators", { "legacy": true }],
+    ["@babel/plugin-proposal-class-properties"]
+  ]
+}
+```
+
+## legacy 开启与不开启的区别
+- 根据 Babel 提供的资料(https://babeljs.io/blog/2018/09/17/decorators), 装饰器这一提案不断的在经历变动, 其中有一次破环性较大的改动, 为了兼容旧的提案, Babel 在 7.0.0 中为 @babel/plugin-proposal-decorators 插件引入了 legacy 标识, 其有效值为 true, 通过该标识来确定 Babel 进行转义时使用最新的提案还是旧提案. 
+- 在 Babel 7.1.0 彻底引入了对新提案的支持, 并且在使用 plugin-proposal-decorators 插件时默认启用. 
+
+## 新旧提案差异
+1. 表达式差异
+
+旧提案允许任何有效的左表达式（字面量，函数，类表达式，new 表达式以及函数调用等）用作装饰器主体。有效代码如下所示：
+```js
+class MyClass {
+  @getDecorators().methods[name]
+  foo() {}
+
+  @decorator
+  [bar]() {}
+}
+```
+该语法存在问题：[...] 符号在装饰器内被用作属性访问及定义计算名称。为了防止这种歧义出现，新提案只允许通过点属性访问（foo.bar）可以选择在参数末尾使用（foo.bar()）。如果需要使用很复杂的表达式，可以将它们包裹在括号内
+```js
+class MyClass {
+  @decorator
+  @dec(arg1, arg2)
+  @namespace.decorator
+  @(complex ? dec1 : dec2)
+  method() {}
+}
+```
+
+2. 对象装饰器
+
+旧提案允许除类和类元素装饰器以外的对象成员使用装饰器：
+```js
+const myObj = {
+  @dec1 foo: 3,
+  @dec2 bar() {},
+};
+```
+由于与当前对象字面量语义的某些不兼容性，它们已从提案中被移除。
+
+3. 装饰器函数相关参数
+
+在提案的第一个版本中，类元素装饰器接收的参数分别为目标类（或对象），key 以及属性描述符 - 与传递给 Object.defineProperty 的形式类似。类装饰器将目标构造函数（constructor）作为唯一参数。
+
+新的装饰器提案更加强大：元素装饰器会接收一个对象，该对象除更改属性描述符外，还允许更改 key 值，可以赋值（static，prototype 或者 own），以及元素的类型（field 或 method）。它们还可以创建其他属性并在装饰类上定义运行函数（完成器）。
+
+## 参考资料
+- [@babel/plugin-proposal-decorators legacy 介绍](https://babeljs.io/docs/en/babel-plugin-proposal-decorators#legacy)
+- [装饰器旧提案与新提案区别](https://babeljs.io/blog/2018/09/17/decorators)
+- [装饰器旧提案与新提案区别(中文)](https://juejin.cn/post/6844903758283948045)
+- [装饰器提案](https://github.com/tc39/proposal-decorators)
