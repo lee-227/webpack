@@ -298,7 +298,7 @@ try {
 # Babel legacy
 ## legacy 
 - Use the legacy (stage 1) decorators syntax and behavior.
-- 使用遗留(阶段1)装饰器语法和行为。
+- 使用历史(阶段1)装饰器语法和行为。
 - 这个选项主要是用于 [@babel/plugin-proposal-decorators](https://babeljs.io/docs/en/babel-plugin-proposal-decorators#legacy) 插件 
 
 ## 官方介绍
