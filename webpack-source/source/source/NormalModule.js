@@ -15,9 +15,8 @@ class NormalModule {
     async,
   }) {
     this.name = name
-    this.context = context //C:\aproject\zhufeng202009webpack\8.my
-    this.rawRequest = rawRequest //src\index.js
-    //C:\aproject\zhufeng202009webpack\8.my\src\index.js
+    this.context = context
+    this.rawRequest = rawRequest
     this.resource = resource //这是这个模块的绝对路径
     //这是AST解析器,可以把源代码转成AST抽象语法树
     this.parser = parser
