@@ -27,7 +27,7 @@ let queue = new AsyncSeriesWaterfallHook(['name', 'age']);
 
 console.time('cost');
 queue.tapPromise('1', function (name) {
-  return new Promise(function (resolve) {
+  return new Promise(function (resolve, reject) {
     setTimeout(function () {
       console.log(name, 1);
       resolve(1);
@@ -50,6 +50,10 @@ queue.tapPromise('3', function (data) {
     }, 3000);
   });
 });
-queue.promise('lee').then((err) => {
+queue.promise('lee').then((data) => {
+  console.log('成功: ',data);
   console.timeEnd('cost');
-});
+}).catch((err) => {
+  console.log('失败: ',err);
+  console.timeEnd('cost');
+})
