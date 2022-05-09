@@ -17,6 +17,7 @@
 ## tapable 中的 hooks
 - 学习 tapable 就是学习它的各种各样的 hook
 - 我们先大致看下 tapable 都有多少种 hook
+
 ### 按照同步异步分类
 - hook 的类型可以分位 `同步Sync` 和 `异步Async`, 而异步又可以分为 `并行Parallel` 和 `串行Series`
 ![图 1](images/88485917ad028f46395087fcb8fee0e60d163493871f15d534f676f1fc769962.png)  
@@ -28,7 +29,7 @@
 3. Waterfall 按照注册顺序 依次执行每一个事件函数 当函数的 result !== undefined 时, 该 result 会成为下一个事件函数的第一个参数
 4. Loop 按照注册顺序 不断的执行每一个事件函数 直到所有函数的 result === undefined , 当某个函数 result !== undefined 时, 回到第一个函数 重新执行
 
-## hook 的使用
+### hook 的使用
 - SyncHook 按照注册顺序 依次执行每一个事件函数 不关心函数的返回值
 ```js
 const { SyncHook } = require('tapable');
@@ -650,4 +651,168 @@ queue.promise('baidu').then((data) => {
 // cost: 6.012s
 ```
 
+### hook 的拦截器 interceptor 
+- tapable 提供的所有 hook 都支持 interceptor , 此拦截器与 axios 中的拦截器非常相似
+- 通过 hook 的拦截器 可以对该 hook 的整个流程进行监听, 并触发对应的逻辑
+- intercept() hook 的拦截器 API
+  - register: 当 hook 通过 tap tapAsync tapPromise 注册事件时, 便会触发 register 拦截器
+  - call: 当 hook 通过 call callAsync callPromise 触发注册的事件时, 便会触发 call 拦截器
+  - tap: 在 hook 的注册事件执行前会触发 tap 拦截器
+```js
+const { SyncHook } = require('tapable');
+const syncHook = new SyncHook(['name', 'age']);
 
+syncHook.intercept({
+  register(tap) {
+    // 接收 tap 对象, 初始化之后生成的初始对象
+    console.log('开始注册1', tap.name);
+    // 可以返回一个被处理后的 tap 对象
+    return tap;
+  },
+  tap(tap) {
+    // 接收 tap 对象
+    console.log(tap.name + '开始执行1');
+  },
+  call(name, age) {
+    // 接收调用 call 时传入的参数
+    console.log('开始call1', name, age);
+  },
+});
+
+syncHook.intercept({
+  register(tap) {
+    console.log('开始注册2', tap.name);
+    return tap;
+  },
+  tap(tap) {
+    console.log(tap.name + '开始执行2');
+  },
+  call(name, age) {
+    console.log('开始call2', name, age);
+  },
+});
+
+syncHook.tap({ name: 'baidu1' }, (name, age) => {
+  console.log('baidu1', name, age);
+});
+syncHook.tap({ name: 'baidu2' }, (name, age) => {
+  console.log('baidu2', name, age);
+});
+
+syncHook.call('baidu', '24');
+
+// 执行结果
+// 开始注册1 baidu1
+// 开始注册2 baidu1
+// 开始注册1 baidu2
+// 开始注册2 baidu2
+// 开始call1 baidu 24
+// 开始call2 baidu 24
+// baidu1开始执行1
+// baidu1开始执行2
+// baidu1 baidu 24
+// baidu2开始执行1
+// baidu2开始执行2
+// baidu2 baidu 24
+```
+
+### hook 的 stage && before 属性
+- 前文我们说到事件的执行顺序 跟注册顺序一致
+- 其实我们也可以手动确定事件的执行顺序 就是通过 stage 跟 before 属性来控制
+- hook 在注册事件时, 支持传入一个对象
+- 在该对象上 我们可以通过 stage 跟 before 控制本次事件的执行时机
+
+- stage 事件会按照 stage 属性 从小到大的顺序依次执行
+```js
+let { SyncHook } = require('tapable')
+let hook = new SyncHook(['name'])
+
+hook.tap({ name: 'tap1', stage: 1 }, (name) => {
+  console.log(1, name)
+})
+hook.tap({ name: 'tap3', stage: 3 }, (name) => {
+  console.log(3, name)
+})
+hook.tap({ name: 'tap5', stage: 5 }, (name) => {
+  console.log(4, name)
+})
+hook.tap({ name: 'tap2', stage: 2 }, (name) => {
+  console.log(2, name)
+})
+
+hook.call('baidu')
+
+// 执行结果
+// 1 baidu
+// 2 baidu
+// 3 baidu
+// 4 baidu
+// 可以看到 事件的执行顺序 是按照 stage 有小到大执行的
+```
+- before 
+```js
+let { SyncHook } = require('tapable');
+let hook = new SyncHook(['name']);
+debugger;
+hook.tap({ name: 'tap1' }, (name) => {
+  console.log(1, name);
+});
+hook.tap({ name: 'tap3' }, (name) => {
+  console.log(3, name);
+});
+hook.tap({ name: 'tap4' }, (name) => {
+  console.log(4, name);
+});
+hook.tap({ name: 'tap2', before: ['tap3', 'tap4'] }, (name) => {
+  console.log(2, name);
+});
+
+hook.call('baidu');
+
+// 执行结果
+// 1 baidu
+// 2 baidu
+// 3 baidu
+// 4 baidu
+// 通过 before 我们可以定制 hook 注册的事件 在哪些事件执行前执行
+```
+`同时使用 stage 跟 before 属性时, 优先处理 before, 在满足 before 条件之后才会进行 stage 的判断`
+`在使用时建议使用两种属性的某一种空值事件顺序, 不建议混用`
+
+### hookMap
+- 顾名思义, 类似与 Map, 创建一个 hookMap, 用来更好的管理 hook
+```js
+let { SyncHook, HookMap } = require('tapable');
+
+// 通过 HookMap 创建一个 hookMap 对象, 需要传入一个创建 hook 对象的方法
+const keyedHookMap = new HookMap(() => new SyncHook(['name']));
+
+// 得到该 hookMap 对象之后 我们可以通过 for 在该对象中创建一个 hook
+keyedHookMap.for('key1').tap('key1_plugin', (name) => {
+  console.log('key1', name);
+});
+keyedHookMap.for('key1').tap('key1_plugin', (name) => {
+  console.log('key1', name);
+});
+keyedHookMap.for('key2').tap('key2_plugin', (name) => {
+  console.log('key2', name);
+});
+
+// 通过 hookMap 的 get 方法取到你想要的 hook
+const hook1 = keyedHookMap.get('key1');
+
+hook1.call('baidu');
+
+// 执行结果
+// key1 baidu
+// key1 baidu
+```
+
+## tapable 使用方式的学习总结
+- 这里就不在一一复述一遍了, 我们来看下学会了这个 tapable 之后可以带给你什么收获
+- 如果你认真了解了上述内容, 那么恭喜你, 你已经对 tapable 足够熟悉了
+- 现在你再去分析 webpack 构建过程, 你会发现你已经可以很清晰的认识到它的跳转逻辑了, 不在像之前看天书一样
+- 除此之外, 你若想开发一个 webpack plugin, 你也会发现你可以很轻松的上手 webpack 提供的各种 hook
+- 但是, 我们不止步于此, 接下来我们探索一下 tapable 的源码, 你会学到更有趣的知识
+## tapable 的源码思路
+- 待更新~
