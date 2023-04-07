@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -203,6 +204,7 @@ module.exports = (env, argv) => {
         filename: 'css/[name].css',
       }), // css 代码分割
       env.production && new OptimizeCssAssetsWebpackPlugin(), // 优化和压缩CSS资源的插件 一可以放到 optimization中
+      new webpack.BannerPlugin('版权声明'),
     ].filter(Boolean),
   };
 };
