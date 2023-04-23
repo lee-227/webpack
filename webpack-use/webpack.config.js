@@ -122,6 +122,11 @@ module.exports = (env, argv) => {
         {
           test: /\.(jpg|png|gif|svg|bmp)$/, // file-loader 处理CSS等文件中的引入图片路径问题
           type: 'asset',
+          parser: {
+            dataUrlCondition: {
+              maxSize: 4 * 1024, // 4kb
+            },
+          },
           // webpack 4 以下用如下方式
           // use: [
           //   {
