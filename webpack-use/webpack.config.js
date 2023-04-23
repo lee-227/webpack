@@ -4,6 +4,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsWebpackPlugin = require('optimize-css-assets-webpack-plugin');
+const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 require('dotenv').config(); // 读取 env 文件，将文件内容添加到 process.env 上
 
@@ -35,15 +36,19 @@ module.exports = (env, argv) => {
     // 为了提高性能，使用的内存文件系统
     // 默认情况下 devServer 会读取打包后的路径
     devServer: {
-      writeToDisk: true, // 写入硬盘
-      contentBase: path.resolve(__dirname, '/static'), // 额外的静态资源路径
       port: 8000,
       open: true,
       compress: true, // 开启 gzip 压缩
-      // publicPath:'/lee' // 打包生成的静态文件所在的位置，默认找 output 下的 publicPaht 值
-      before: (app) => {
+      onBeforeSetupMiddleware: (devServer) => {
         // 本质上 devSever 启用的是 express 服务器 可以通过这个方法 mock 接口数据
-        app.get('/api', (req, res) => res.end('data'));
+        devServer.app.get('/api', (req, res) => res.end('data'));
+      },
+      static: {
+        directory: path.resolve(__dirname, '/static'), // 额外的静态资源路径
+        // publicPath:'/lee' // 打包生成的静态文件所在的位置，默认找 output 下的 publicPaht 值
+      },
+      devMiddleware: {
+        writeToDisk: true, // 写入硬盘
       },
       // proxy: {
       //   // 接口代理
@@ -71,27 +76,8 @@ module.exports = (env, argv) => {
       rules: [
         {
           test: /\.jsx?$/,
-          loader: 'eslint-loader',
-          enforce: 'pre',
-          options: { fix: true },
-          exclude: /node_modules/,
-        },
-        {
-          test: /\.jsx?$/,
           use: {
             loader: 'babel-loader', // babel-loader 让 webpack 使用 Babel 转译 JavaScript 文件
-            options: {
-              presets: [
-                [
-                  '@babel/preset-env', // 预设 根据这个来决定怎么进行转换
-                ],
-                '@babel/preset-react', // React插件的Babel预设 JSX
-              ],
-              plugins: [
-                ['@babel/plugin-proposal-decorators', { legacy: true }], // 把类和对象装饰器编译成ES5
-                ['@babel/plugin-proposal-class-properties', { loose: true }], // 转换静态类属性以及使用属性初始值化语法声明的属性
-              ],
-            },
           },
         },
         {
@@ -128,40 +114,42 @@ module.exports = (env, argv) => {
         },
         {
           test: /\.(jpg|png|gif|svg|bmp)$/, // file-loader 处理CSS等文件中的引入图片路径问题
-          use: [
-            {
-              loader: 'url-loader', // url-loader 当图片小于limit的时候会把图片BASE64编码，大于limit参数的时候还是使用file-loader进行拷贝
-              options: {
-                esModule: false, // 不使用 esModule 模式进行导出
-                name: '[hash:10].[ext]', // 引入的图片重新用hash命名 也可以设置输出目录 跟 outputPath 配合 publicPath 一致 会导致重新打包删除 images 目录失败
-                limit: 8 * 1024,
-                outputPath: 'images', // 制定输出目录
-                publicPath: '/images', // 输出目录修改时 引入的路径也要修改
-              },
-            },
-            // {
-            //   loader: 'image-webpack-loader',
-            //   options: {
-            //     mozjpeg: {
-            //       progressive: true,
-            //       quality: 65,
-            //     },
-            //     optipng: {
-            //       enabled: false,
-            //     },
-            //     pngquant: {
-            //       quality: '65-90',
-            //       speed: 4,
-            //     },
-            //     gifsicle: {
-            //       interlaced: false,
-            //     },
-            //     webp: {
-            //       quality: 75,
-            //     },
-            //   },
-            // },
-          ],
+          type: 'asset',
+          // webpack 4 以下用如下方式
+          // use: [
+          //   {
+          //     loader: 'url-loader', // url-loader 当图片小于limit的时候会把图片BASE64编码，大于limit参数的时候还是使用file-loader进行拷贝
+          //     options: {
+          //       esModule: false, // 不使用 esModule 模式进行导出
+          //       name: '[hash:10].[ext]', // 引入的图片重新用hash命名 也可以设置输出目录 跟 outputPath 配合 publicPath 一致 会导致重新打包删除 images 目录失败
+          //       limit: 8 * 1024,
+          //       outputPath: 'images', // 制定输出目录
+          //       publicPath: '/images', // 输出目录修改时 引入的路径也要修改
+          //     },
+          //   },
+          //   {
+          //     loader: 'image-webpack-loader',
+          //     options: {
+          //       mozjpeg: {
+          //         progressive: true,
+          //         quality: 65,
+          //       },
+          //       optipng: {
+          //         enabled: false,
+          //       },
+          //       pngquant: {
+          //         quality: '65-90',
+          //         speed: 4,
+          //       },
+          //       gifsicle: {
+          //         interlaced: false,
+          //       },
+          //       webp: {
+          //         quality: 75,
+          //       },
+          //     },
+          //   },
+          // ],
         },
         {
           test: /\.html$/,
@@ -178,6 +166,10 @@ module.exports = (env, argv) => {
     },
     // 插件的功能很强大，可以让webpack执行范围更广的任务，例如打包优化，资源管理，注入环境变量等待等。
     plugins: [
+      new ESLintWebpackPlugin({
+        // 指定检查文件的根目录
+        context: path.resolve(__dirname, 'src'),
+      }),
       new HtmlWebpackPlugin({
         template: './src/index.html',
         minify: {

@@ -1,15 +1,25 @@
 module.exports = {
-  parser: 'babel-eslint',
-  extends: 'airbnb',
-  // 指定脚本的运行环境
+  root: true,
   env: {
     browser: true,
-    node: true,
+    es2021: true,
   },
-  // 启用的规则及其各自的错误级别
+  parser: '@babel/eslint-parser',
+  extends: [
+    'plugin:react/recommended',
+    'airbnb',
+  ],
+  overrides: [
+  ],
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+  },
+  plugins: [
+    'react',
+  ],
   rules: {
-    'linebreak-style': ['off', 'windows'],
-    'no-console': 'off', // 禁止使用console
-    'no-undef': 'off',
+    'no-console': 'off',
+    'max-len': 'off',
   },
 };
