@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -31,6 +32,12 @@ module.exports = (env, argv) => {
       // filename: 'main.js', // 打包后文件名
       // publicPath: '/lee', // 引用资源路径要加的前缀
       // 不清楚具体路径时可以留空，然后再应用的入口文件设置__webpack_public_path__，实现在运行时进行动态设置
+    },
+    resolve: {
+      extensions: ['.js', '.css', '.json'], // 导入模块没添加后缀时尝试请求的后缀
+      alias: {
+        '@': path.resolve(__dirname, 'src'), // 别名 导入 @ 开头路径模块时在 src 下
+      }
     },
     // devServer 会启动一个 HTTP 开发服务器，把一个文件夹作为静态根目录
     // 为了提高性能，使用的内存文件系统
@@ -195,6 +202,7 @@ module.exports = (env, argv) => {
         filename: 'css/[name].css',
       }), // css 代码分割
       env.production && new OptimizeCssAssetsWebpackPlugin(), // 优化和压缩CSS资源的插件 一可以放到 optimization中
+      new webpack.BannerPlugin('版权声明'),
     ].filter(Boolean),
   };
 };

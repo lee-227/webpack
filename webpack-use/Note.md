@@ -253,7 +253,21 @@ module.hot.accept('要处理的模块路径',()=>{
 ```js
 optimization:{
     splitChunks:{
-      chunks:'all' // 此时打包时会把各个入口都引入的包提取到另一个文件中
+      // chunks:'all' // 此时打包时会把各个入口都引入的包提取到另一个文件中
+      cacheGroups: {
+        common: {
+          chunks: 'initial',
+          minSize: 0, // 需要提出的包的大小
+          minChunks: 2, // 要提取的包的引用次数
+        },
+        vendor: {
+          priority: 1, // 提高权重,先抽离公共包
+          test: /node_modules/, // 抽离 node_modules 下第三方包
+          chunks: 'initial',
+          minSize: 0,
+          minChunks: 2,
+        }
+      }
     }
 }
 ```
@@ -273,3 +287,5 @@ import(/* webpackChunkName:'module' */'模块路径').then(module=>{}) // 魔法
       1. preload 预加载
       2. prefetch 预先拉取
    3. splitChunks 分割公共代码
+5. webpack.IgnorePlugin 可以忽略某些包的引入
+6. Happypack 开启多进程打包
