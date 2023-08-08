@@ -261,7 +261,7 @@ optimization:{
           minChunks: 2, // 要提取的包的引用次数
         },
         vendor: {
-          priority: 1, // 提高权重,先抽离公共包
+          priority: 1, // 提高权重,先抽离公共包 避免上方 common 配置影响
           test: /node_modules/, // 抽离 node_modules 下第三方包
           chunks: 'initial',
           minSize: 0,
@@ -278,9 +278,11 @@ import(/* webpackChunkName:'module' */'模块路径').then(module=>{}) // 魔法
 ```
 
 ## 如何利用 webpack 优化前端性能
-1. 代码压缩
+- webpack 生产环境下自带优化点
+1. 代码压缩 
 2. tree shaking 通过 babel 启用
 3. 通过 webpack 的作用域提升 让 Webpack 打包出来的代码文件更小、运行的更快。producetion 模式下启用 ModuleConcatenationPlugin
+- 按照自己需求 手动优化点
 4. 代码分割 
    1. 入口点分割 不够灵活，不适用 spa 项目
    2. 动态导入 import 
@@ -289,3 +291,4 @@ import(/* webpackChunkName:'module' */'模块路径').then(module=>{}) // 魔法
    3. splitChunks 分割公共代码
 5. webpack.IgnorePlugin 可以忽略某些包的引入
 6. Happypack 开启多进程打包
+7. DllPlugin 打包第三方库
