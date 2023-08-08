@@ -176,6 +176,8 @@ module.exports = (env, argv) => {
           ], // html 中引入图片的处理
         },
       ],
+      // 告诉 webpack 不去分析 jquery 里的依赖项 优化打包速度
+      noParse: /jquery/
     },
     // 插件的功能很强大，可以让webpack执行范围更广的任务，例如打包优化，资源管理，注入环境变量等待等。
     plugins: [
@@ -209,6 +211,10 @@ module.exports = (env, argv) => {
       }), // css 代码分割
       env.production && new OptimizeCssAssetsWebpackPlugin(), // 优化和压缩CSS资源的插件 一可以放到 optimization中
       new webpack.BannerPlugin('版权声明'),
+      new webpack.IgnorePlugin({ // 忽略 在 moment 中引入的 local 包
+        contextRegExp: /\.\/local/,
+        resourceRegExp: 'moment'
+      })
     ].filter(Boolean),
   };
 };
