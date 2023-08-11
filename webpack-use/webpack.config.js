@@ -29,6 +29,7 @@ module.exports = (env, argv) => {
       path: path.resolve(__dirname, 'dist'), // 打包后文件路径 默认值 ./dist/main.js
       filename: '[name].[hash:10].js', // 入口代码块的名称
       chunkFilename: '[name].[hash:10].js', // 非入口代码块的名称 两个来源 1.代码分割 common vendor 2.懒加载 import 导入的模块
+      clean: true, // clean-webpack-plugin
       // filename: 'main.js', // 打包后文件名
       // publicPath: '/lee', // 引用资源路径要加的前缀
       // 不清楚具体路径时可以留空，然后再应用的入口文件设置__webpack_public_path__，实现在运行时进行动态设置
@@ -128,6 +129,9 @@ module.exports = (env, argv) => {
               maxSize: 4 * 1024, // 4kb
             },
           },
+          generator: {
+            filename: 'image/[name]'
+          }
           // webpack 4 以下用如下方式
           // use: [
           //   {
