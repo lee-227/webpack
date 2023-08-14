@@ -1,5 +1,6 @@
 module.exports = {
   root: true,
+  requireConfigFile: false,
   env: {
     browser: true,
     es2021: true,
