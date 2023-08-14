@@ -16,6 +16,7 @@ function loader(content) {
 
   let fileName = interpolateName(this, options.name, { content });
   this.emitFile(fileName, content); // 向输出目录里多写一个文件 文件名叫fileName，内容
+  // this.addDependency('filepath'); // 告诉 webpack 在 watch 执行打包时监听此文件 
   if (typeof options.esModule === 'undefined' || options.esModule) {
     return `export default "${fileName}"`; //es modules
   } else {

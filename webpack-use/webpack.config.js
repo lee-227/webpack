@@ -29,11 +29,13 @@ module.exports = (env, argv) => {
       path: path.resolve(__dirname, 'dist'), // 打包后文件路径 默认值 ./dist/main.js
       filename: '[name].[hash:10].js', // 入口代码块的名称
       chunkFilename: '[name].[hash:10].js', // 非入口代码块的名称 两个来源 1.代码分割 common vendor 2.懒加载 import 导入的模块
+      clean: true, // clean-webpack-plugin
       // filename: 'main.js', // 打包后文件名
       // publicPath: '/lee', // 引用资源路径要加的前缀
       // 不清楚具体路径时可以留空，然后再应用的入口文件设置__webpack_public_path__，实现在运行时进行动态设置
     },
     resolve: {
+      modules: path.resolve('node_modules'),
       extensions: ['.js', '.css', '.json'], // 导入模块没添加后缀时尝试请求的后缀
       alias: {
         '@': path.resolve(__dirname, 'src'), // 别名 导入 @ 开头路径模块时在 src 下
@@ -127,6 +129,9 @@ module.exports = (env, argv) => {
               maxSize: 4 * 1024, // 4kb
             },
           },
+          generator: {
+            filename: 'image/[name]'
+          }
           // webpack 4 以下用如下方式
           // use: [
           //   {
@@ -175,6 +180,8 @@ module.exports = (env, argv) => {
           ], // html 中引入图片的处理
         },
       ],
+      // 告诉 webpack 不去分析 jquery 里的依赖项 优化打包速度
+      noParse: /jquery/
     },
     // 插件的功能很强大，可以让webpack执行范围更广的任务，例如打包优化，资源管理，注入环境变量等待等。
     plugins: [
@@ -208,6 +215,10 @@ module.exports = (env, argv) => {
       }), // css 代码分割
       env.production && new OptimizeCssAssetsWebpackPlugin(), // 优化和压缩CSS资源的插件 一可以放到 optimization中
       new webpack.BannerPlugin('版权声明'),
+      new webpack.IgnorePlugin({ // 忽略 在 moment 中引入的 local 包
+        contextRegExp: /\.\/local/,
+        resourceRegExp: 'moment'
+      })
     ].filter(Boolean),
   };
 };
