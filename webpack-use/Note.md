@@ -290,5 +290,5 @@ import(/* webpackChunkName:'module' */'模块路径').then(module=>{}) // 魔法
       2. prefetch 预先拉取
    3. splitChunks 分割公共代码
 5. webpack.IgnorePlugin 可以忽略某些包的引入
-6. Happypack 开启多进程打包
+6. Happypack 开启多进程打包 
 7. DllPlugin 打包第三方库
