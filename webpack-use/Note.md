@@ -58,7 +58,7 @@ new HtmlWebpackExternalsPlugin({
       global: '_', // 全局变量名
     },
   ],
-}),
+})
 ```
 
 ## Sourcemap 
