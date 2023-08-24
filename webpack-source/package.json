@@ -23,7 +23,7 @@
     "less": "^4.1.1",
     "loader-utils": "^2.0.0",
     "postcss": "^8.2.9",
-    "webpack": "^5.28.0",
+    "webpack": "^5.88.2",
     "webpack-cli": "^4.6.0"
   },
   "dependencies": {
