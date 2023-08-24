@@ -35,7 +35,7 @@ module.exports = (env, argv) => {
       // 不清楚具体路径时可以留空，然后再应用的入口文件设置__webpack_public_path__，实现在运行时进行动态设置
     },
     resolve: {
-      modules: path.resolve('node_modules'),
+      modules: [path.resolve('node_modules')],
       extensions: ['.js', '.css', '.json'], // 导入模块没添加后缀时尝试请求的后缀
       alias: {
         '@': path.resolve(__dirname, 'src'), // 别名 导入 @ 开头路径模块时在 src 下
@@ -217,7 +217,7 @@ module.exports = (env, argv) => {
       new webpack.BannerPlugin('版权声明'),
       new webpack.IgnorePlugin({ // 忽略 在 moment 中引入的 local 包
         contextRegExp: /\.\/local/,
-        resourceRegExp: 'moment'
+        resourceRegExp: /moment/
       })
     ].filter(Boolean),
   };
