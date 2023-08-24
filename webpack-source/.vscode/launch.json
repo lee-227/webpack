@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Launch Program",
-            "program": "${workspaceFolder}/webpack-source/run.js",
+            "program": "${workspaceFolder}/run.js",
             "request": "launch",
             "skipFiles": [
                 "<node_internals>/**"
